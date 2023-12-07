@@ -1,68 +1,47 @@
 import { Injectable } from '@nestjs/common';
 
-import { IPokemon } from '@domains/pokemon/pokemon';
-import { IPokemonListService, IPokemonService } from '@infra/pokemon/pokemon';
+import type {
+  FindAllPokemonsParams,
+  IPokemon,
+  PaginatedResult,
+  Pokemons,
+} from '@domains/pokemon/interfaces/pokemon';
+import type {
+  IPokemonListService,
+  IPokemonService,
+} from '@infra/pokemon/interfaces/pokemon';
 import { PokemonRepository } from '@infra/pokemon/pokemon.repository';
-import { PokemonTransformer } from '@clients/pokemon/transformers/pokemon.transformer';
+import { PokemonStandardizer } from '@clients/pokemon/standardizers/pokemon.standardizer';
 
 @Injectable()
-export class PokemonClient {
+export class PokemonClient implements IPokemon {
   constructor(
     private readonly pokemonRepository: PokemonRepository,
-    private readonly pokemonTransformer: PokemonTransformer,
+    private readonly pokemonStandardizer: PokemonStandardizer,
   ) {}
-  async findAll(): Promise<Array<IPokemon>> {
+  async findAll(params: FindAllPokemonsParams): Promise<PaginatedResult> {
     const pokemonListService: IPokemonListService =
       await this.pokemonRepository.findAllPokemonSpecies({
-        page: this.PAGE,
-        totalPokemonCount: this.ALL_CURRENT_POKEMONS,
+        page: params.page,
+        totalPokemonsCount: params.pageSize,
       });
-
-    if (this.hasMorePokemonToFetch(pokemonListService)) {
-      const morePokemonsService = await this.fetchMorePokemonRecursive(
-        pokemonListService,
-      );
-
-      const pokemons = await this.retrievePokemonsAndTransformData(
-        morePokemonsService,
-      );
-
-      return pokemons;
-    }
 
     const pokemons = await this.retrievePokemonsAndTransformData(
       pokemonListService,
     );
 
-    return pokemons;
-  }
+    console.log({
+      pokemons: pokemons.length,
+      totalPokemonsCount: Number(params.pageSize),
+    });
 
-  private async fetchMorePokemonRecursive(
-    pokemonListService: IPokemonListService,
-  ): Promise<IPokemonListService> {
-    if (this.hasMorePokemonToFetch(pokemonListService)) {
-      const morePokemons = await this.pokemonRepository.findAllPokemonSpecies({
-        page: this.PAGE,
-        totalPokemon: String(pokemonListService.count + 1),
-      });
-
-      const updatedResults = pokemonListService.results.concat(
-        morePokemons.results,
-      );
-
-      pokemonListService.results = updatedResults;
-      pokemonListService.next = morePokemons.next;
-
-      return this.fetchMorePokemonRecursive(pokemonListService);
-    }
-
-    return pokemonListService;
-  }
-
-  private hasMorePokemonToFetch(
-    pokemonListService: IPokemonListService,
-  ): boolean {
-    return pokemonListService.next !== null;
+    return {
+      pokemons,
+      pagination: {
+        ...params,
+        hasNext: pokemons.length === Number(params.pageSize),
+      },
+    };
   }
 
   private async retrievePokemonsByName(
@@ -86,16 +65,13 @@ export class PokemonClient {
 
   private async retrievePokemonsAndTransformData(
     pokemonListService: IPokemonListService,
-  ): Promise<Array<IPokemon>> {
+  ): Promise<Pokemons> {
     const pokemonsService: Array<IPokemonService> =
       await this.retrievePokemonsByName(pokemonListService);
 
-    const pokemons: Array<IPokemon> =
-      this.pokemonTransformer.transformPokemonData(pokemonsService);
+    const pokemons: Pokemons =
+      this.pokemonStandardizer.transformPokemonData(pokemonsService);
 
     return pokemons;
   }
-
-  private ALL_CURRENT_POKEMONS = '1010';
-  private PAGE = '0';
 }

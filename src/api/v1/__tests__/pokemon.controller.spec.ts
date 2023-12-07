@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus } from '@nestjs/common';
 
-import { PokemonController } from '@domains/pokemon/pokemon.controller';
-import { PokemonService } from '../../pokemon/pokemon.service';
-import { generatePokemon } from '../../../helpers/generators';
+import { PokemonController } from '@api/v1/pokemon.controller';
+import { PokemonService } from '@domains/pokemon/use-cases/pokemon.service';
+import { generatePokemon } from '@helpers/generators';
 import { CacheModule } from '@nestjs/cache-manager';
 import { PokemonClient } from '@clients/pokemon/pokemon.client';
-import { PokemonTransformer } from '@clients/pokemon/transformers/pokemon.transformer';
 import { PokemonRepository } from '@infra/pokemon/pokemon.repository';
+import { PokemonStandardizer } from '@clients/pokemon/standardizers/pokemon.standardizer';
 
 const mockResponse = {
   ...jest.requireActual('express'),
@@ -27,7 +27,7 @@ describe('PokemonController', () => {
         PokemonService,
         PokemonClient,
         PokemonRepository,
-        PokemonTransformer,
+        PokemonStandardizer,
       ],
     }).compile();
 

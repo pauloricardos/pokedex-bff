@@ -20,3 +20,7 @@ export interface IPokemonService {
   types: PokemonTypesService;
   sprites: PokemonSpritesService;
 }
+export interface FindAllPokemonParams {
+  page: string;
+  totalPokemonsCount: string;
+}

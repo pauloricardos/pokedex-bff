@@ -12,6 +12,7 @@
     "baseUrl": ".",
     "paths": {
       "@domains/*": ["./src/domains/*"],
+      "@api/*": ["./src/api/*"],
       "@helpers/*": ["./src/helpers/*"],
       "@infra/*": ["./src/infra/*"],
       "@clients/*": ["./src/clients/*"],

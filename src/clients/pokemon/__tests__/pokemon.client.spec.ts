@@ -12,17 +12,17 @@ import {
   generatePokemonSpeciesTypesService,
 } from '@helpers/generators';
 import { PokemonRepository } from '@infra/pokemon/pokemon.repository';
-import { PokemonTransformer } from '@clients/pokemon/transformers/pokemon.transformer';
+import { PokemonStandardizer } from '@clients/pokemon/standardizers/pokemon.standardizer';
 
 jest.mock('@infra/pokemon/pokemon.repository');
 
 describe('PokemonClient', () => {
   let pokemonRepository: PokemonRepository;
-  let pokemonTransformer: PokemonTransformer;
+  let pokemonStandardizer: PokemonStandardizer;
   let cacheManagerMock: Partial<Cache>;
 
   let pokemonRepositoryMocked: jest.MockedObjectDeep<PokemonRepository>;
-  let pokemonTransformerMocked: jest.MockedObjectDeep<PokemonTransformer>;
+  let pokemonStandardizerMocked: jest.MockedObjectDeep<PokemonStandardizer>;
 
   beforeEach(async () => {
     cacheManagerMock = {
@@ -34,16 +34,17 @@ describe('PokemonClient', () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
         PokemonRepository,
-        PokemonTransformer,
+        PokemonStandardizer,
         { provide: CacheModule, useValue: cacheManagerMock },
       ],
     }).compile();
 
     pokemonRepository = moduleRef.get<PokemonRepository>(PokemonRepository);
-    pokemonTransformer = moduleRef.get<PokemonTransformer>(PokemonTransformer);
+    pokemonStandardizer =
+      moduleRef.get<PokemonStandardizer>(PokemonStandardizer);
 
     pokemonRepositoryMocked = jest.mocked(pokemonRepository);
-    pokemonTransformerMocked = jest.mocked(pokemonTransformer);
+    pokemonStandardizerMocked = jest.mocked(pokemonStandardizer);
   });
 
   const pokemonServiceWithoutNextProperty = generatePokemonListService({
@@ -160,7 +161,7 @@ describe('PokemonClient', () => {
         it('then calls pokemon repository successfully', async () => {
           const pokemonClient = new PokemonClient(
             pokemonRepositoryMocked,
-            pokemonTransformerMocked,
+            pokemonStandardizerMocked,
           );
 
           await pokemonClient.findAll();
@@ -199,7 +200,7 @@ describe('PokemonClient', () => {
 
           const pokemonClient = new PokemonClient(
             pokemonRepositoryMocked,
-            pokemonTransformerMocked,
+            pokemonStandardizerMocked,
           );
 
           expect(await pokemonClient.findAll()).toEqual(expectedResult);
@@ -237,7 +238,7 @@ describe('PokemonClient', () => {
         it('then calls pokemon repository successfully', async () => {
           const pokemonClient = new PokemonClient(
             pokemonRepositoryMocked,
-            pokemonTransformerMocked,
+            pokemonStandardizerMocked,
           );
 
           await pokemonClient.findAll();
@@ -299,7 +300,7 @@ describe('PokemonClient', () => {
           ];
           const pokemonClient = new PokemonClient(
             pokemonRepositoryMocked,
-            pokemonTransformerMocked,
+            pokemonStandardizerMocked,
           );
 
           expect(await pokemonClient.findAll()).toStrictEqual(expectedResult);

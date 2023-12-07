@@ -19,6 +19,7 @@
   "coverageDirectory": "../coverage",
   "moduleNameMapper": {
     "^@domains/(.*)$": "<rootDir>/src/domains/$1",
+    "^@api/(.*)$": "<rootDir>/src/api/$1",
     "^@infra/(.*)$": "<rootDir>/src/infra/$1",
     "^@helpers/(.*)$": "<rootDir>/src/helpers/$1",
     "^@clients/(.*)$": "<rootDir>/src/clients/$1"

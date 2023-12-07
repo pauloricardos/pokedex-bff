@@ -1,4 +1,4 @@
-import { PokemonTransformer } from '@clients/pokemon/transformers/pokemon.transformer';
+import { PokemonStandardizer } from '@clients/pokemon/standardizers/pokemon.standardizer';
 import { PokemonType } from '@domains/enums/PokemonType.enum';
 import {
   generatePokemon,
@@ -134,7 +134,7 @@ describe('PokemonTransformer', () => {
   describe('transformPokemonData', () => {
     describe('when this method is called', () => {
       it('then transforms the pokemon service data into pokemon data to domain layer', () => {
-        const pokemonTransformer = new PokemonTransformer();
+        const pokemonTransformer = new PokemonStandardizer();
 
         const transformedPokemonData = pokemonTransformer.transformPokemonData(
           listOfPokemonsService,

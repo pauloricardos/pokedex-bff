@@ -1,19 +1,17 @@
 import { Injectable } from '@nestjs/common';
 
-import { IPokemon } from '@domains/pokemon/pokemon';
-import { IPokemonService } from '@infra/pokemon/pokemon';
-import {
+import type { Pokemon, Pokemons } from '@domains/pokemon/interfaces/pokemon';
+import { IPokemonService } from '@infra/pokemon/interfaces/pokemon.d';
+import type {
   PokemonSpeciesTypesService,
   PokemonTypesService,
-} from '@infra/pokemon/types/pokemon.types';
+} from '@infra/pokemon/interfaces/pokemon.types';
 import { PokemonType } from '@domains/enums/PokemonType.enum';
 
 @Injectable()
-export class PokemonTransformer {
-  transformPokemonData(
-    pokemonService: Array<IPokemonService>,
-  ): Array<IPokemon> {
-    return pokemonService.map((pokemon: IPokemonService): IPokemon => {
+export class PokemonStandardizer {
+  transformPokemonData(pokemonService: Array<IPokemonService>): Pokemons {
+    return pokemonService.map((pokemon: IPokemonService): Pokemon => {
       return {
         id: pokemon.id,
         pokedexEntry: pokemon.order,
