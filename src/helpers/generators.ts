@@ -1,14 +1,16 @@
-import { IPokemonListService, IPokemonService } from '@infra/pokemon/pokemon';
+import type {
+  IPokemonListService,
+  IPokemonService,
+} from '@infra/pokemon/interfaces/pokemon.d';
 import { PokemonType } from '@domains/enums/PokemonType.enum';
-import { IPokemon } from '@domains/pokemon/pokemon.d';
-import {
+import type { Pokemon } from '@domains/pokemon/interfaces/pokemon.d';
+import type {
   PokemonServiceData,
   PokemonSpeciesTypesService,
-  PokemonTypesService,
-} from '@infra/pokemon/types/pokemon.types';
+} from '@infra/pokemon/interfaces/pokemon.types';
 
-export const generatePokemon = (values: Partial<IPokemon> = {}): IPokemon => {
-  const baseValues: IPokemon = {
+export const generatePokemon = (values: Partial<Pokemon> = {}): Pokemon => {
+  const baseValues: Pokemon = {
     id: 1,
     pokedexEntry: 1,
     name: 'bulbasaur',

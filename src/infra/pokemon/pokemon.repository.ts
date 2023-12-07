@@ -3,24 +3,28 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
 import { httpClient } from '@infra/httpClient';
-import { IPokemonListService, IPokemonService } from '@infra/pokemon/pokemon.d';
+import {
+  FindAllPokemonParams,
+  IPokemonListService,
+  IPokemonService,
+} from '@infra/pokemon/interfaces/pokemon';
 import type {
   PokemonListServiceResponse,
   PokemonServiceResponse,
-} from '@infra/pokemon/types/pokemon.types';
+} from '@infra/pokemon/interfaces/pokemon.types';
 
 @Injectable()
 export class PokemonRepository {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
   async findAllPokemonSpecies({
     page,
-    totalPokemonCount,
-  }: Record<string, string>): Promise<IPokemonListService> {
+    totalPokemonsCount,
+  }: FindAllPokemonParams): Promise<IPokemonListService> {
     const { data }: PokemonListServiceResponse = await httpClient.get(
       '/pokemon-species',
       {
         offset: page,
-        limit: totalPokemonCount,
+        limit: totalPokemonsCount,
       },
     );
 
@@ -29,18 +33,18 @@ export class PokemonRepository {
 
   async findPokemonByName(name: string): Promise<IPokemonService> {
     try {
-      const cachedPokemons: IPokemonService | undefined =
-        await this.cacheManager.get<IPokemonService>(name);
+      // const cachedPokemons: IPokemonService | undefined =
+      //   await this.cacheManager.get<IPokemonService>(name);
 
-      if (cachedPokemons) {
-        return cachedPokemons;
-      }
+      // if (cachedPokemons) {
+      //   return cachedPokemons;
+      // }
 
       const { data }: PokemonServiceResponse = await httpClient.get(
         `/pokemon/${name}`,
       );
 
-      await this.cacheManager.set(name, data, this.cacheTTL);
+      // await this.cacheManager.set(name, data, this.cacheTTL);
 
       return data;
     } catch (err) {

@@ -52,7 +52,7 @@ describe('PokemonRepository', () => {
       it('then calls the http client', async () => {
         await pokemonRepository.findAllPokemonSpecies({
           page: '0',
-          totalPokemonCount: '1281',
+          totalPokemonsCount: '1281',
         });
 
         expect(httpClientMocked.get).toBeCalledWith('/pokemon-species', {
@@ -72,7 +72,7 @@ describe('PokemonRepository', () => {
 
         const result = await pokemonRepository.findAllPokemonSpecies({
           page: '0',
-          totalPokemonCount: '1281',
+          totalPokemonsCount: '1281',
         });
 
         expect(result).toStrictEqual(pokemonListService);
