@@ -30,16 +30,11 @@ export class PokemonClient implements IPokemon {
       pokemonListService,
     );
 
-    console.log({
-      pokemons: pokemons.length,
-      totalPokemonsCount: Number(params.pageSize),
-    });
-
     return {
       pokemons,
       pagination: {
         ...params,
-        hasNext: pokemons.length === Number(params.pageSize),
+        hasNext: Boolean(pokemonListService.next),
       },
     };
   }
