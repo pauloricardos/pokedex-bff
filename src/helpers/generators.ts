@@ -3,7 +3,12 @@ import type {
   IPokemonService,
 } from '@infra/pokemon/interfaces/pokemon.d';
 import { PokemonType } from '@domains/enums/PokemonType.enum';
-import type { Pokemon } from '@domains/pokemon/interfaces/pokemon.d';
+import type {
+  FindAllPokemonsParams,
+  Pokemon,
+  FindAllPokemonParamsResult,
+  PaginatedPokemonsResult,
+} from '@domains/pokemon/interfaces/pokemon.d';
 import type {
   PokemonServiceData,
   PokemonSpeciesTypesService,
@@ -17,6 +22,38 @@ export const generatePokemon = (values: Partial<Pokemon> = {}): Pokemon => {
     spriteUrl:
       'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
     types: [PokemonType.Grass, PokemonType.Poison],
+  };
+
+  return { ...baseValues, ...values };
+};
+
+export const generateFindAllParams = (
+  values: Partial<FindAllPokemonsParams> = {},
+): FindAllPokemonsParams => {
+  const baseValues: FindAllPokemonsParams = {
+    pageSize: 151,
+  };
+
+  return { ...baseValues, ...values };
+};
+
+export const generateFindAllPokemonParamsResult = (
+  values: Partial<FindAllPokemonParamsResult> = {},
+): FindAllPokemonParamsResult => {
+  const baseValues: FindAllPokemonParamsResult = {
+    pageSize: 151,
+    hasNext: false,
+  };
+
+  return { ...baseValues, ...values };
+};
+
+export const generatePaginatedPokemonsResult = (
+  values: Partial<PaginatedPokemonsResult> = {},
+): PaginatedPokemonsResult => {
+  const baseValues: PaginatedPokemonsResult = {
+    pokemons: [generatePokemon()],
+    pagination: generateFindAllPokemonParamsResult(),
   };
 
   return { ...baseValues, ...values };

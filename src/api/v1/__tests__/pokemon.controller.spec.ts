@@ -3,7 +3,10 @@ import { HttpStatus } from '@nestjs/common';
 
 import { PokemonController } from '@api/v1/pokemon.controller';
 import { PokemonService } from '@domains/pokemon/use-cases/pokemon.service';
-import { generatePokemon } from '@helpers/generators';
+import {
+  generateFindAllParams,
+  generatePaginatedPokemonsResult,
+} from '@helpers/generators';
 import { CacheModule } from '@nestjs/cache-manager';
 import { PokemonClient } from '@clients/pokemon/pokemon.client';
 import { PokemonRepository } from '@infra/pokemon/pokemon.repository';
@@ -37,14 +40,16 @@ describe('PokemonController', () => {
 
   describe('/pokemons', () => {
     describe('findAll', () => {
+      const params = generateFindAllParams();
+
       it('then returns all the pokemons', async () => {
-        const pokemons = [generatePokemon()];
+        const pokemons = generatePaginatedPokemonsResult();
         jest.spyOn(pokemonService, 'findAll').mockResolvedValueOnce(pokemons);
 
-        await pokemonController.findAll(mockResponse);
+        await pokemonController.findAll(mockResponse, params);
 
-        expect(mockResponse.status).toBeCalledWith(HttpStatus.OK);
-        expect(mockResponse.json).toBeCalledWith(pokemons);
+        expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
+        expect(mockResponse.json).toHaveBeenCalledWith(pokemons);
       });
     });
   });

@@ -51,11 +51,11 @@ describe('PokemonRepository', () => {
 
       it('then calls the http client', async () => {
         await pokemonRepository.findAllPokemonSpecies({
-          page: '0',
-          totalPokemonsCount: '1281',
+          offset: '0',
+          limit: '1281',
         });
 
-        expect(httpClientMocked.get).toBeCalledWith('/pokemon-species', {
+        expect(httpClientMocked.get).toHaveBeenCalledWith('/pokemon-species', {
           limit: '1281',
           offset: '0',
         });
@@ -71,8 +71,8 @@ describe('PokemonRepository', () => {
         });
 
         const result = await pokemonRepository.findAllPokemonSpecies({
-          page: '0',
-          totalPokemonsCount: '1281',
+          offset: '0',
+          limit: '1281',
         });
 
         expect(result).toStrictEqual(pokemonListService);

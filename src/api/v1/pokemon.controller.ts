@@ -3,7 +3,7 @@ import type { Response } from 'express';
 import { PokemonService } from '@domains/pokemon/use-cases/pokemon.service';
 import type {
   FindAllPokemonsParams,
-  Pokemons,
+  PaginatedPokemonsResult,
 } from '@domains/pokemon/interfaces/pokemon';
 import { FindAllParams } from './schemas/pokemon.schema';
 
@@ -15,12 +15,11 @@ export class PokemonController {
   async findAll(
     @Res() res: Response,
     @Query() req: FindAllParams,
-  ): Promise<Response<Pokemons, Record<string, any>>> {
-    const { page, pageSize } = req;
+  ): Promise<Response<PaginatedPokemonsResult>> {
+    const { pageSize } = req;
 
     const params: FindAllPokemonsParams = {
-      page,
-      pageSize,
+      pageSize: Number(pageSize),
     };
 
     const pokemons = await this.pokemonService.findAll(params);

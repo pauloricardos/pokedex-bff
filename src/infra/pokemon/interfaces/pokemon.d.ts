@@ -21,6 +21,6 @@ export interface IPokemonService {
   sprites: PokemonSpritesService;
 }
 export interface FindAllPokemonParams {
-  page: string;
-  totalPokemonsCount: string;
+  offset: string;
+  limit: string;
 }

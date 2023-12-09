@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
 import type {
+  FindAllPokemonParamsResult,
   FindAllPokemonsParams,
   IPokemon,
-  PaginatedResult,
+  PaginatedPokemonsResult,
   Pokemons,
 } from '@domains/pokemon/interfaces/pokemon';
 import type {
@@ -19,25 +20,39 @@ export class PokemonClient implements IPokemon {
     private readonly pokemonRepository: PokemonRepository,
     private readonly pokemonStandardizer: PokemonStandardizer,
   ) {}
-  async findAll(params: FindAllPokemonsParams): Promise<PaginatedResult> {
+  async findAll(
+    params: FindAllPokemonsParams,
+  ): Promise<PaginatedPokemonsResult> {
     const pokemonListService: IPokemonListService =
       await this.pokemonRepository.findAllPokemonSpecies({
-        page: params.page,
-        totalPokemonsCount: params.pageSize,
+        offset: '0',
+        limit: String(params.pageSize),
       });
 
     const pokemons = await this.retrievePokemonsAndTransformData(
       pokemonListService,
     );
 
+    const pagination = this.buildPaginationResult(
+      params,
+      pokemonListService.next,
+    );
+
     return {
       pokemons,
-      pagination: {
-        ...params,
-        hasNext: Boolean(pokemonListService.next),
-      },
+      pagination,
     };
   }
+
+  private buildPaginationResult = (
+    pagination: FindAllPokemonsParams,
+    hasNext: string | null,
+  ): FindAllPokemonParamsResult => {
+    return {
+      pageSize: pagination.pageSize,
+      hasNext: Boolean(hasNext),
+    };
+  };
 
   private async retrievePokemonsByName(
     pokemonListService: IPokemonListService,

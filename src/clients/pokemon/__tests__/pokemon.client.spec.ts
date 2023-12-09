@@ -5,6 +5,9 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { PokemonClient } from '@clients/pokemon/pokemon.client';
 import { PokemonType } from '@domains/enums/PokemonType.enum';
 import {
+  generateFindAllParams,
+  generateFindAllPokemonParamsResult,
+  generatePaginatedPokemonsResult,
   generatePokemon,
   generatePokemonListService,
   generatePokemonService,
@@ -141,72 +144,9 @@ describe('PokemonClient', () => {
   ];
 
   describe('findAll', () => {
+    const findAllParams = generateFindAllParams({ pageSize: 1010 });
+
     describe('when the client is called', () => {
-      describe('and has not more pokemon to fetch', () => {
-        beforeEach(() => {
-          pokemonRepositoryMocked.findAllPokemonSpecies.mockResolvedValue(
-            pokemonServiceWithoutNextProperty,
-          );
-          pokemonRepositoryMocked.findPokemonByName.mockResolvedValueOnce(
-            listOfPokemonsService[0],
-          );
-          pokemonRepositoryMocked.findPokemonByName.mockResolvedValueOnce(
-            listOfPokemonsService[1],
-          );
-          pokemonRepositoryMocked.findPokemonByName.mockResolvedValueOnce(
-            listOfPokemonsService[2],
-          );
-        });
-
-        it('then calls pokemon repository successfully', async () => {
-          const pokemonClient = new PokemonClient(
-            pokemonRepositoryMocked,
-            pokemonStandardizerMocked,
-          );
-
-          await pokemonClient.findAll();
-
-          expect(pokemonRepositoryMocked.findAllPokemonSpecies).toBeCalledWith({
-            page: '0',
-            totalPokemonCount: '1010',
-          });
-        });
-
-        it('then returns all available pokemons', async () => {
-          const expectedResult = [
-            generatePokemon({
-              name: 'bulbasaur',
-              types: [PokemonType.Grass, PokemonType.Poison],
-              spriteUrl:
-                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
-            }),
-            generatePokemon({
-              id: 611,
-              pokedexEntry: 611,
-              spriteUrl:
-                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
-              name: 'mimikyu',
-              types: [PokemonType.Ghost, PokemonType.Fairy],
-            }),
-            generatePokemon({
-              id: 9,
-              pokedexEntry: 9,
-              spriteUrl:
-                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
-              name: 'charizard',
-              types: [PokemonType.Fire, PokemonType.Flying],
-            }),
-          ];
-
-          const pokemonClient = new PokemonClient(
-            pokemonRepositoryMocked,
-            pokemonStandardizerMocked,
-          );
-
-          expect(await pokemonClient.findAll()).toEqual(expectedResult);
-        });
-      });
-
       describe('and has more pokemon to fetch', () => {
         beforeEach(() => {
           pokemonRepositoryMocked.findAllPokemonSpecies.mockResolvedValueOnce(
@@ -241,69 +181,55 @@ describe('PokemonClient', () => {
             pokemonStandardizerMocked,
           );
 
-          await pokemonClient.findAll();
+          await pokemonClient.findAll(findAllParams);
 
-          expect(pokemonRepositoryMocked.findAllPokemonSpecies).toBeCalledWith({
-            page: '0',
-            totalPokemonCount: '1010',
+          expect(
+            pokemonRepositoryMocked.findAllPokemonSpecies,
+          ).toHaveBeenCalledWith({
+            offset: '0',
+            limit: '1010',
           });
         });
 
-        it('then returns all available pokemons', async () => {
-          const expectedResult = [
-            generatePokemon({
-              name: 'bulbasaur',
-              types: [PokemonType.Grass, PokemonType.Poison],
-              spriteUrl:
-                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
+        it('then returns the pokemons', async () => {
+          const expectedResult = generatePaginatedPokemonsResult({
+            pokemons: [
+              generatePokemon({
+                name: 'bulbasaur',
+                types: [PokemonType.Grass, PokemonType.Poison],
+                spriteUrl:
+                  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
+              }),
+              generatePokemon({
+                id: 611,
+                pokedexEntry: 611,
+                spriteUrl:
+                  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
+                name: 'mimikyu',
+                types: [PokemonType.Ghost, PokemonType.Fairy],
+              }),
+              generatePokemon({
+                id: 9,
+                pokedexEntry: 9,
+                spriteUrl:
+                  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
+                name: 'charizard',
+                types: [PokemonType.Fire, PokemonType.Flying],
+              }),
+            ],
+            pagination: generateFindAllPokemonParamsResult({
+              pageSize: 1010,
+              hasNext: true,
             }),
-            generatePokemon({
-              id: 611,
-              pokedexEntry: 611,
-              spriteUrl:
-                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
-              name: 'mimikyu',
-              types: [PokemonType.Ghost, PokemonType.Fairy],
-            }),
-            generatePokemon({
-              id: 9,
-              pokedexEntry: 9,
-              spriteUrl:
-                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
-              name: 'charizard',
-              types: [PokemonType.Fire, PokemonType.Flying],
-            }),
-            generatePokemon({
-              id: 6,
-              pokedexEntry: 6,
-              spriteUrl:
-                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
-              name: 'blastoise',
-              types: [PokemonType.Water],
-            }),
-            generatePokemon({
-              id: 645,
-              pokedexEntry: 645,
-              spriteUrl:
-                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
-              name: 'greninja',
-              types: [PokemonType.Water, PokemonType.Dark],
-            }),
-            generatePokemon({
-              id: 708,
-              pokedexEntry: 708,
-              spriteUrl:
-                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
-              name: 'decidueye',
-              types: [PokemonType.Grass, PokemonType.Ghost],
-            }),
-          ];
+          });
           const pokemonClient = new PokemonClient(
             pokemonRepositoryMocked,
             pokemonStandardizerMocked,
           );
 
-          expect(await pokemonClient.findAll()).toStrictEqual(expectedResult);
+          expect(await pokemonClient.findAll(findAllParams)).toStrictEqual(
+            expectedResult,
+          );
         });
       });
     });

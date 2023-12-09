@@ -1,11 +1,8 @@
-import { IsNumberString, IsNotEmpty } from 'class-validator';
+import { IsInt } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class FindAllParams {
-  @IsNumberString()
-  @IsNotEmpty()
-  page: string;
-
-  @IsNumberString()
-  @IsNotEmpty()
-  pageSize: string;
+  @IsInt()
+  @Type(() => Number)
+  pageSize: number;
 }

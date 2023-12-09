@@ -3,7 +3,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
 import { httpClient } from '@infra/httpClient';
-import {
+import type {
   FindAllPokemonParams,
   IPokemonListService,
   IPokemonService,
@@ -17,14 +17,14 @@ import type {
 export class PokemonRepository {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
   async findAllPokemonSpecies({
-    page,
-    totalPokemonsCount,
+    limit,
+    offset,
   }: FindAllPokemonParams): Promise<IPokemonListService> {
     const { data }: PokemonListServiceResponse = await httpClient.get(
       '/pokemon-species',
       {
-        offset: page,
-        limit: totalPokemonsCount,
+        offset,
+        limit,
       },
     );
 
@@ -33,24 +33,23 @@ export class PokemonRepository {
 
   async findPokemonByName(name: string): Promise<IPokemonService> {
     try {
-      // const cachedPokemons: IPokemonService | undefined =
-      //   await this.cacheManager.get<IPokemonService>(name);
+      const cachedPokemons: IPokemonService | undefined =
+        await this.cacheManager.get<IPokemonService>(name);
 
-      // if (cachedPokemons) {
-      //   return cachedPokemons;
-      // }
+      if (cachedPokemons) {
+        return cachedPokemons;
+      }
 
       const { data }: PokemonServiceResponse = await httpClient.get(
         `/pokemon/${name}`,
       );
 
-      // await this.cacheManager.set(name, data, this.cacheTTL);
+      await this.cacheManager.set(name, data, this.cacheTTL);
 
       return data;
     } catch (err) {
       throw err;
     }
   }
-
-  private cacheTTL = 0;
+  private cacheTTL = 10000;
 }
