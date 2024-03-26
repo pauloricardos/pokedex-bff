@@ -16,10 +16,11 @@ export class PokemonController {
     @Res() res: Response,
     @Query() req: FindAllParams,
   ): Promise<Response<PaginatedPokemonsResult>> {
-    const { pageSize } = req;
+    const { pageSize, offset } = req;
 
     const params: FindAllPokemonsParams = {
       pageSize: Number(pageSize),
+      offset: Number(offset),
     };
 
     const pokemons = await this.pokemonService.findAll(params);

@@ -5,4 +5,8 @@ export class FindAllParams {
   @IsInt()
   @Type(() => Number)
   pageSize: number;
+
+  @IsInt()
+  @Type(() => Number)
+  offset: number;
 }

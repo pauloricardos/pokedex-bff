@@ -12,6 +12,7 @@ export type Pokemons = Array<Pokemon>;
 
 export type FindAllPokemonsParams = {
   pageSize: number;
+  offset: number;
 };
 
 export type FindAllPokemonParamsResult = FindAllPokemonsParams & {

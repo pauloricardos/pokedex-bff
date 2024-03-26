@@ -25,7 +25,7 @@ export class PokemonClient implements IPokemon {
   ): Promise<PaginatedPokemonsResult> {
     const pokemonListService: IPokemonListService =
       await this.pokemonRepository.findAllPokemonSpecies({
-        offset: '0',
+        offset: String(params.offset),
         limit: String(params.pageSize),
       });
 
@@ -50,6 +50,7 @@ export class PokemonClient implements IPokemon {
   ): FindAllPokemonParamsResult => {
     return {
       pageSize: pagination.pageSize,
+      offset: pagination.offset,
       hasNext: Boolean(hasNext),
     };
   };
