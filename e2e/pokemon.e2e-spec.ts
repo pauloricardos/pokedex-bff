@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { PokemonModule } from '@domains/pokemon/pokemon.module';
-import { IPokemon } from '@domains/pokemon/pokemon';
 import { generatePokemon } from '@helpers/generators';
+import { Pokemon } from '@domains/pokemon/interfaces/pokemon';
 
 jest.setTimeout(55000);
 
@@ -21,8 +21,8 @@ describe('PokemonController - (e2e)', () => {
 
   it('/pokemons (GET)', async () => {
     const mapExpectedResult = (
-      pokemonsResponse: Array<IPokemon>,
-    ): Array<IPokemon> =>
+      pokemonsResponse: Array<Pokemon>,
+    ): Array<Pokemon> =>
       pokemonsResponse.map((pokemon) =>
         generatePokemon({
           pokedexEntry: pokemon.pokedexEntry,
